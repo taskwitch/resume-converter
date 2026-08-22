@@ -1,12 +1,11 @@
 % resume.sty
-% Typesetting scaffolding modeled directly on example.tex (the well-known
-% "sb2nov/resume"-style template the user supplied as a reference): small-caps
+% Typesetting scaffolding in the classic "sb2nov/resume"-style: small-caps
 % \large section headings immediately followed by a \titlerule, entry rows
-% built from tabular* with \extracolsep{fill} (not tabularx), a tiny centered
-% bullet, and global ragged-right. Deliberately uses LaTeX's DEFAULT font
-% (Computer Modern -- no font package loaded) and DEFAULT color (plain
-% black -- no \definecolor/\color anywhere) so the underlying typesetting can
-% be verified on its own, before any site-specific color/font styling is
+% built from a two-column table, a tiny centered bullet, and global
+% ragged-right. Deliberately uses LaTeX's DEFAULT font (Computer Modern --
+% no font package loaded) and DEFAULT color (plain black -- no
+% \definecolor/\color anywhere) so the underlying typesetting can be
+% verified on its own, before any site-specific color/font styling is
 % reapplied on top.
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{resume}[2026/01/01 taskwitch resume style]
@@ -15,7 +14,7 @@
 \RequirePackage[utf8]{inputenc}
 \RequirePackage{titlesec}
 \RequirePackage{enumitem}
-\RequirePackage[hidelinks]{hyperref}   % hidelinks: no color, no border -- matches example.tex
+\RequirePackage[hidelinks]{hyperref}   % hidelinks: no color, no border
 \RequirePackage{tabularx}
 \RequirePackage{graphicx}    % for \reflectbox, used in the \KaTeX logo below
 \RequirePackage{needspace}   % keeps a section heading's rule from splitting onto the next page
@@ -35,8 +34,8 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
 \setlist{itemsep=1pt, parsep=1pt, topsep=2pt, leftmargin=1.4em}
-% Small centered bullet, matching example.tex's \labelitemi redefinition --
-% visibly smaller/tighter than LaTeX's default itemize bullet.
+% Small centered bullet -- visibly smaller/tighter than LaTeX's default
+% itemize bullet.
 \renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
 
 % -- Helper: expand #2 if #1 is empty, else #3. Deliberately avoids the
@@ -48,9 +47,8 @@
 }
 
 % -- Section headings ("## Heading" in the source Markdown) --------------
-% Small-caps, \large, ragged-right, rule immediately beneath -- the exact
-% \titleformat shape example.tex uses, minus its extra manual \vspace
-% fine-tuning (titlespacing* below does that job instead).
+% Small-caps, \large, ragged-right, rule immediately beneath.
+% titlespacing* below controls the spacing above/below the rule.
 \titleformat{\section}
   {\raggedright\large\scshape}
   {}{0em}{}
@@ -90,24 +88,20 @@
   \vspace{10pt}
 }
 
-% -- A run of consecutive entries under one heading is wrapped in this list.
-% Modeled on example.tex's \resumeSubHeadingListStart: an itemize with no
-% visible bullet and no left margin, so each \item's own content (below)
-% sits flush with the section heading above it. Using \item to place each
-% entry -- rather than a bare box in vertical mode -- sidesteps LaTeX's "a
-% box starting a paragraph gets \parindent" behavior entirely; \item already
-% establishes the right horizontal-mode state on its own.
+% -- A run of consecutive entries under one heading is wrapped in this list:
+% an itemize with no visible bullet and no left margin, so each \item's own
+% content (below) sits flush with the section heading above it. Using \item
+% to place each entry -- rather than a bare box in vertical mode -- sidesteps
+% LaTeX's "a box starting a paragraph gets \parindent" behavior entirely;
+% \item already establishes the right horizontal-mode state on its own.
 \newcommand{\resumeSubHeadingListStart}{\begin{itemize}[label={},leftmargin=0pt,topsep=2pt,itemsep=8pt,parsep=0pt]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
 
 % -- Entry row: title/date on one line, subtitle/aside on the next --------
-% example.tex's \resumeSubheading/\resumeProject build this out of tabular*
-% with \extracolsep{fill}, whose left column is a plain non-wrapping `l` --
-% fine for the example's short placeholder text, but real entry titles here
-% (award/cert names, etc.) are frequently longer than half a line and would
-% overflow the page margin in a non-wrapping column. tabularx's `X` column
-% keeps the same two-column "flexible-left, content-width-right" visual
-% shape while actually wrapping long text.
+% Built from tabularx's `X` column (flexible-left, content-width-right) --
+% not a fixed non-wrapping `l` column, since real entry titles (award/cert
+% names, etc.) are frequently longer than half a line and would overflow
+% the page margin in a non-wrapping column.
 % Must be called as a list item inside \resumeSubHeadingListStart...End.
 % #1 title (already hyperlinked if needed)  #2 subtitle  #3 date  #4 aside  #5 body
 %
