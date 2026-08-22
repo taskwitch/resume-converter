@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+
+# LaTeX build output (from --to latex output dirs and example.tex test builds)
+build/
+*.aux
+*.log
+*.out
+*.pdf
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# LaTeX build artifacts rendered to images during development
+*.png
+
+# OS cruft
+.DS_Store

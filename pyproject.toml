@@ -1,0 +1,19 @@
+[project]
+name = "resume-converter"
+version = "0.1.0"
+description = "Convert Hugo résumé Markdown (content/resume/*.md) to/from LaTeX, YAML, and JSON."
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6.0", "Jinja2>=3.1"]
+
+[project.scripts]
+resume-converter = "converter.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["converter*"]
+
+[tool.setuptools.package-data]
+converter = ["templates/*"]

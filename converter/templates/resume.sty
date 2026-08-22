@@ -1,0 +1,133 @@
+% resume.sty
+% Typesetting scaffolding modeled directly on example.tex (the well-known
+% "sb2nov/resume"-style template the user supplied as a reference): small-caps
+% \large section headings immediately followed by a \titlerule, entry rows
+% built from tabular* with \extracolsep{fill} (not tabularx), a tiny centered
+% bullet, and global ragged-right. Deliberately uses LaTeX's DEFAULT font
+% (Computer Modern -- no font package loaded) and DEFAULT color (plain
+% black -- no \definecolor/\color anywhere) so the underlying typesetting can
+% be verified on its own, before any site-specific color/font styling is
+% reapplied on top.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{resume}[2026/01/01 taskwitch resume style]
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{titlesec}
+\RequirePackage{enumitem}
+\RequirePackage[hidelinks]{hyperref}   % hidelinks: no color, no border -- matches example.tex
+\RequirePackage{tabularx}
+\RequirePackage{graphicx}    % for \reflectbox, used in the \KaTeX logo below
+\RequirePackage{needspace}   % keeps a section heading's rule from splitting onto the next page
+
+\raggedright
+\setlength{\tabcolsep}{0pt}
+
+% KaTeX isn't a real (pdf)LaTeX macro -- it only exists via the site's
+% browser-side KaTeX renderer -- so source content written for the web
+% (e.g. inline "$\KaTeX$") needs a stand-in logo here. Definition matches
+% the one KaTeX's own docs use for LaTeX output.
+\providecommand{\KaTeX}{K\kern-.17em\reflectbox{A}\kern-.15em\TeX}
+
+% pandoc emits \tightlist inside every list it generates (pandoc_bridge.py);
+% this is pandoc's own convention, not a native LaTeX command.
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\setlist{itemsep=1pt, parsep=1pt, topsep=2pt, leftmargin=1.4em}
+% Small centered bullet, matching example.tex's \labelitemi redefinition --
+% visibly smaller/tighter than LaTeX's default itemize bullet.
+\renewcommand{\labelitemi}{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+% -- Helper: expand #2 if #1 is empty, else #3. Deliberately avoids the
+%    common "\ifx&#1&" idiom, since a literal & inside a tabular* cell
+%    would be misread as a column separator.
+\newcommand{\resume@ifempty}[3]{%
+  \def\resume@tempa{#1}%
+  \ifx\resume@tempa\@empty#2\else#3\fi
+}
+
+% -- Section headings ("## Heading" in the source Markdown) --------------
+% Small-caps, \large, ragged-right, rule immediately beneath -- the exact
+% \titleformat shape example.tex uses, minus its extra manual \vspace
+% fine-tuning (titlespacing* below does that job instead).
+\titleformat{\section}
+  {\raggedright\large\scshape}
+  {}{0em}{}
+  [\titlerule]
+\titlespacing*{\section}{0pt}{12pt}{4pt}
+% \needspace reserves room for the heading line, its rule, and the start of
+% whatever follows -- without it, TeX's ordinary page-breaking algorithm is
+% free to break between the title line and titlesec's after-code rule
+% (they're just two pieces of vertical material with no glue tying them
+% together), which is exactly how a heading could land at the very bottom of
+% a page while its rule strands itself atop the next one.
+\newcommand{\resumesection}[1]{\needspace{4\baselineskip}\section*{#1}}
+
+% -- Header block: name + tagline (left), contact (right), rule beneath --
+% #1 name  #2 tagline lines (already \\-joined, may be empty)
+% #3 contact lines (already \\-joined, may be empty)
+% Name and tagline are nested in their own [t]-aligned tabular, exactly like
+% the contact block on the right -- if they were laid out as plain paragraph
+% material below the outer tabularx (as an earlier version of this macro
+% did), the outer row's height would be dictated by whichever column is
+% taller (usually the multi-line contact block), and the tagline would then
+% start only after that *entire* row, leaving a visible gap under the name
+% whenever contact has more lines than name+tagline combined.
+\newcommand{\resumeheader}[3]{%
+  \noindent
+  \begin{tabularx}{\linewidth}{@{}X@{\hspace{1em}}r@{}}
+    \begin{tabular}[t]{@{}l@{}}
+      {\LARGE\bfseries#1}\resume@ifempty{#2}{}{\\\small#2}
+    \end{tabular}
+    &
+    \begin{tabular}[t]{@{}r@{}}
+      \small#3
+    \end{tabular}
+  \end{tabularx}\par
+  \vspace{4pt}
+  \noindent\rule{\linewidth}{0.8pt}\par
+  \vspace{10pt}
+}
+
+% -- A run of consecutive entries under one heading is wrapped in this list.
+% Modeled on example.tex's \resumeSubHeadingListStart: an itemize with no
+% visible bullet and no left margin, so each \item's own content (below)
+% sits flush with the section heading above it. Using \item to place each
+% entry -- rather than a bare box in vertical mode -- sidesteps LaTeX's "a
+% box starting a paragraph gets \parindent" behavior entirely; \item already
+% establishes the right horizontal-mode state on its own.
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[label={},leftmargin=0pt,topsep=2pt,itemsep=8pt,parsep=0pt]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+
+% -- Entry row: title/date on one line, subtitle/aside on the next --------
+% example.tex's \resumeSubheading/\resumeProject build this out of tabular*
+% with \extracolsep{fill}, whose left column is a plain non-wrapping `l` --
+% fine for the example's short placeholder text, but real entry titles here
+% (award/cert names, etc.) are frequently longer than half a line and would
+% overflow the page margin in a non-wrapping column. tabularx's `X` column
+% keeps the same two-column "flexible-left, content-width-right" visual
+% shape while actually wrapping long text.
+% Must be called as a list item inside \resumeSubHeadingListStart...End.
+% #1 title (already hyperlinked if needed)  #2 subtitle  #3 date  #4 aside  #5 body
+%
+% The trailing \vspace before #5 needs \vspace{-\baselineskip} first: when a
+% tabularx box is immediately followed by a list environment (#5 is pandoc's
+% own \begin{itemize}...\end{itemize} output), TeX still inserts its normal
+% automatic interline glue before that list's first line on top of whatever
+% \vspace/topsep is requested explicitly -- worth roughly one whole text line
+% (~13pt here), which read as a stray blank line between the subtitle row
+% and the entry's bullets. Cancelling it with -\baselineskip first and then
+% adding back the small gap actually wanted keeps the two rows visually
+% attached, the way the site's own CSS renders them.
+\newcommand{\resumeentry}[5]{%
+  \item
+  \begin{tabularx}{\linewidth}{@{}X@{\hspace{1em}}r@{}}
+    \textbf{#1} & \textit{\small#3} \\
+    \resume@ifempty{#2}{}{\textit{\small#2}} &
+    \resume@ifempty{#4}{}{\small#4}
+  \end{tabularx}
+  \resume@ifempty{#5}{}{\vspace{-\baselineskip}\vspace{6pt}#5}
+}
+
+\endinput
