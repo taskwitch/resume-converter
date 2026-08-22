@@ -1,6 +1,8 @@
 # Résumé Converter
 
-Converts a Hugo résumé Markdown file (`content/resume/*.md`, using the
+*This is an internal tool for my blog*
+
+Converts a [Taskwitch Blog](taskwitch.github.io) résumé Markdown file (`content/resume/*.md`, using the
 `layout: resume` front matter and the `resume/entry` shortcode — see
 `docs/resume-page.md` at the repo root) to **LaTeX** (visually matching the
 live page's style), **YAML**, or **JSON**. YAML/JSON can also be converted
