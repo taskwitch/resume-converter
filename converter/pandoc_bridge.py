@@ -29,6 +29,11 @@ def _mbox_wrap_tex_logos(latex_text: str) -> str:
     return _TEX_LOGO_RE.sub(lambda m: f"\\mbox{{\\{m.group(1)}}}", latex_text)
 
 
+def _latex_dashes(latex_text: str) -> str:
+    """Literal em/en dashes -> LaTeX ``---`` / ``--`` so they render in any engine."""
+    return latex_text.replace("\u2014", "---").replace("\u2013", "--")
+
+
 def pandoc_available() -> bool:
     return shutil.which("pandoc") is not None
 
@@ -53,4 +58,4 @@ def markdown_to_latex(md_text: str | None) -> str:
         stderr = result.stderr.decode("utf-8", "replace")
         raise RuntimeError(f"pandoc failed converting markdown to latex: {stderr}")
 
-    return _mbox_wrap_tex_logos(result.stdout.decode("utf-8").strip())
+    return _latex_dashes(_mbox_wrap_tex_logos(result.stdout.decode("utf-8").strip()))

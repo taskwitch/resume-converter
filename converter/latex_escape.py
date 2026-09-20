@@ -18,6 +18,8 @@ _LATEX_MAP = {
     "}": r"\}",
     "~": r"\textasciitilde{}",
     "^": r"\textasciicircum{}",
+    "\u2014": "---",  # em dash
+    "\u2013": "--",  # en dash
 }
 
 
